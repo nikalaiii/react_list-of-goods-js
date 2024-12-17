@@ -24,35 +24,30 @@ export const App = () => {
   const [sortMode, setSortMode] = useState('');
   const [visibleGoods, setVisibleGoods] = useState(goodsFromServer);
 
-  function setSort(sortType) {
-    let sortedGoods;
+  function setSort(goods, sortType, isReverse) {
+    let sortedGoods = [...goods];
 
     switch (sortType) {
       case SORT_MODE_ALPHABET:
-        sortedGoods = [...goodsFromServer] // Always start with start array
-          .sort((good1, good2) => good1.localeCompare(good2));
+        sortedGoods.sort((a, b) => a.localeCompare(b));
         break;
-
       case SORT_MODE_LENGTH:
-        sortedGoods = [...goodsFromServer].sort(
-          (good1, good2) => good1.length - good2.length,
-        );
+        sortedGoods.sort((a, b) => a.length - b.length);
         break;
-
-      case SORT_MODE_REVERSE:
-        sortedGoods = [...visibleGoods] // reverse start array
-          .reverse();
-        break;
-
       case SORT_MODE_RESET:
-        sortedGoods = [...goodsFromServer]; // start array
+        sortedGoods = [...goodsFromServer];
         break;
-
+      case SORT_MODE_REVERSE:
+        break;
       default:
-        return;
+        break;
     }
 
-    setVisibleGoods(sortedGoods);
+    if (isReverse) {
+      sortedGoods.reverse();
+    }
+
+    return sortedGoods;
   }
 
   return (
@@ -66,8 +61,8 @@ export const App = () => {
               : 'button is-info is-light'
           }
           onClick={() => {
+            setVisibleGoods(setSort(visibleGoods, SORT_MODE_ALPHABET, false));
             setSortMode(SORT_MODE_ALPHABET);
-            setSort(SORT_MODE_ALPHABET);
           }}
         >
           Sort alphabetically
@@ -81,8 +76,8 @@ export const App = () => {
               : 'button is-success is-light'
           }
           onClick={() => {
+            setVisibleGoods(setSort(visibleGoods, SORT_MODE_LENGTH, false));
             setSortMode(SORT_MODE_LENGTH);
-            setSort(SORT_MODE_LENGTH);
           }}
         >
           Sort by length
@@ -96,8 +91,8 @@ export const App = () => {
               : 'button is-warning is-light'
           }
           onClick={() => {
-            setSortMode(SORT_MODE_REVERSE);
-            setSort(SORT_MODE_REVERSE);
+            setVisibleGoods(setSort(visibleGoods, SORT_MODE_REVERSE, true));
+            setSortMode(SORT_MODE_REVERSE)
           }}
         >
           Reverse
@@ -112,8 +107,8 @@ export const App = () => {
                 : 'button is-danger is-light'
             }
             onClick={() => {
+              setVisibleGoods(setSort(visibleGoods, SORT_MODE_RESET, false));
               setSortMode(SORT_MODE_RESET);
-              setSort(SORT_MODE_RESET);
             }}
           >
             Reset
